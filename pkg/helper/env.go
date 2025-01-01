@@ -1,9 +1,9 @@
-package env
+package helper
 
 import (
 	"os"
 
-	"github.com/mohdjishin/sportsphere/constants"
+	"github.com/mohdjishin/sportsphere/pkg/constants"
 )
 
 func GetEnv(key constants.EnvironmentVariable, fallback string) string {
