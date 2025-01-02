@@ -14,6 +14,7 @@ type ServerConfig struct {
 	WriteTimeout int
 	Port         string `json:"port"`
 	LogLevel     string `json:"log_level"`
+	DatabaseName string `json:"database_name"`
 }
 
 var (
