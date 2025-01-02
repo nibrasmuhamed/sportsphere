@@ -39,7 +39,9 @@ type Collection struct {
 func (c Collection) Name() string {
 	return c.CollectionName
 }
-
+func NewMongoDB() *MongoDB {
+	return &MongoDB{}
+}
 func (db *MongoDB) Connect(uri, dbName string) error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 

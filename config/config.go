@@ -15,6 +15,7 @@ type ServerConfig struct {
 	Port         string `json:"port"`
 	LogLevel     string `json:"log_level"`
 	DatabaseName string `json:"database_name"`
+	DatabaseType string `json:"database_type"`
 }
 
 var (
