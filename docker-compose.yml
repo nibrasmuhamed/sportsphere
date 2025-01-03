@@ -14,11 +14,11 @@ services:
     app:
         build: .
         environment:
-            MONGO_URI: "mongodb://root:U3BvcnRTcGhlcmUK@db:27017" # for credentials purpose , can be moved to .env file later. @nibrasmuhamed
+            MONGO_URL: "mongodb://root:U3BvcnRTcGhlcmUK@db:27017" # for credentials purpose , can be moved to .env file later. @nibrasmuhamed
         depends_on:
-            - db
+        - db
         networks:
-            - sportssphere-network
+        - sportssphere-network
         ports:
             - "8000:8000"
 

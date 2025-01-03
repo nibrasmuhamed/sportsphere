@@ -8,26 +8,18 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/mohdjishin/sportsphere/config"
-	"github.com/mohdjishin/sportsphere/internal/api"
-	systemMiddleware "github.com/mohdjishin/sportsphere/internal/middleware"
+	"github.com/mohdjishin/sportsphere/internal/middleware"
+	"github.com/mohdjishin/sportsphere/internal/routes"
 	"github.com/mohdjishin/sportsphere/pkg/logger"
 	"go.uber.org/zap"
 )
 
 func Run(ctx context.Context) {
-	// Initialize the router and middlewares
 	r := chi.NewRouter()
+	middleware.RegisterMiddleware(r)
 
-	// Middlewares for health check, logging, etc.
-	r.Use(middleware.Heartbeat("/health"))
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(systemMiddleware.CORSMiddleware)
-
-	r.Mount("/api/v1", api.Router())
+	routes.RegisterRoutes(r)
 
 	server := &http.Server{
 		Addr:         ":" + config.Get().Port,

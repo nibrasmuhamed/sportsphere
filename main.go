@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	_ "github.com/mohdjishin/sportsphere/config"
+	"github.com/mohdjishin/sportsphere/db"
 	"github.com/mohdjishin/sportsphere/internal/server"
 	"github.com/mohdjishin/sportsphere/pkg/logger"
 )
@@ -16,6 +17,7 @@ func main() {
 	defer cancel()
 
 	logger.Run(ctx)
+	db.InitDatabase()
 
 	go server.Run(ctx)
 
