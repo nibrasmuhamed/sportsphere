@@ -1,5 +1,6 @@
 {
     "log_level": "info",
     "port": "8000",
-    "database_type": "mongodb"
+    "database_type": "mongodb",
+    "database_name": "sportssphere"
 }

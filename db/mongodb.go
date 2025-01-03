@@ -157,7 +157,6 @@ func (db *MongoDB) Update(
 
 func (db *MongoDB) Create(
 	container DataContainer,
-	keyValue any,
 	object any) error {
 	dbCollection := db.database.Collection(container.Name())
 	_, err := dbCollection.InsertOne(db.mongoCtx, object)

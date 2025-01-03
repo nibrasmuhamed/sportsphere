@@ -10,7 +10,7 @@ func InitDatabase() {
 	if config.Get().DatabaseType == "mongodb" {
 		db = NewMongoDB()
 	}
-	err := db.Connect(helper.GetEnv("MONGO_URI", "mongodb://localhost:27017"), config.Get().DatabaseName)
+	err := db.Connect(helper.GetEnv("MONGO_URL", "mongodb://localhost:27017"), config.Get().DatabaseName)
 	if err != nil {
 		panic(err)
 	}
