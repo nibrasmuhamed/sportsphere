@@ -11,7 +11,7 @@ type DatabaseClient interface {
 	Get(container DataContainer, keyName string, keyValue any, object any, operatorId string) error
 	GetMany(container DataContainer, keyName string, keyValue string, object any, operatorId string) error
 	Update(container DataContainer, keyName string, keyValue any, object any, operatorId string, ctx context.Context) error
-	Create(container DataContainer, keyValue any, object any) error
+	Create(container DataContainer, object any) error
 	CreateMany(container DataContainer, keyValue any, object []any) error
 	Delete(container DataContainer, keyName string, keyValue any, operatorId string) error
 }

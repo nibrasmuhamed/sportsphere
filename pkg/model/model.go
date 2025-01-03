@@ -2,15 +2,6 @@ package models
 
 import "time"
 
-// Operator represents a turf operator.
-type Operator struct {
-	ID            string    `json:"id" bson:"_id"`
-	Name          string    `json:"name" bson:"name"`
-	CreatedAt     time.Time `json:"createdAt" bson:"created_at"`
-	UpdatedAt     time.Time `json:"updatedAt" bson:"updated_at"`
-	IsDeactivated bool      `json:"isDeactivated" bson:"is_deactivated"`
-}
-
 // Turf represents an individual turf under an operator.
 type Turf struct {
 	ID            string    `json:"id" bson:"_id"`
