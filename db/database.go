@@ -11,13 +11,13 @@ type DatabaseClient interface {
 	Get(container DataContainer, keyName string, keyValue any, object any, operatorId string) error
 	GetMany(container DataContainer, keyName string, keyValue string, object any, operatorId string) error
 	// Transaction can be nil if not required.
-	Update(container DataContainer, keyName string, keyValue any, object any, operatorId string, ctx context.Context, t Transaction) error
+	Update(container DataContainer, keyName string, keyValue any, object any, operatorId string, ctx context.Context, t UnitOfWork) error
 	// Transaction can be nil if not required.
-	Create(container DataContainer, object any, t Transaction) error
+	Create(container DataContainer, object any, t UnitOfWork) error
 	// Transaction can be nil if not required.
-	CreateMany(container DataContainer, object []any, t Transaction) error
+	CreateMany(container DataContainer, object []any, t UnitOfWork) error
 	// Transaction can be nil if not required.
-	Delete(container DataContainer, keyName string, keyValue any, operatorId string, t Transaction) error
+	Delete(container DataContainer, keyName string, keyValue any, operatorId string, t UnitOfWork) error
 	StartSession() (any, error)
 }
 

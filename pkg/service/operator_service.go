@@ -26,7 +26,7 @@ func NewOperatorService(operatorRepo repository.OperatorRepository) OperatorServ
 }
 
 func (o *operatorService) CreateOperator(operatorRequest models.OperatorRequest) (models.OperatorResponse, error) {
-	transaction, err := db.NewTransaction(context.Background())
+	uow, err := db.NewUnitOfWork(context.Background())
 	if err != nil {
 		logger.Error("error while creating transaction", zap.Error(err))
 		return models.OperatorResponse{}, err
@@ -48,9 +48,13 @@ func (o *operatorService) CreateOperator(operatorRequest models.OperatorRequest)
 		return models.OperatorResponse{}, err
 	}
 
-	err = o.operatorRepo.CreateOperator(context.Background(), operatorModel, transaction)
+	err = o.operatorRepo.CreateOperator(context.Background(), operatorModel, uow)
+	if err != nil {
+		logger.Error("error while creating operator", zap.Error(err))
+		return models.OperatorResponse{}, err
+	}
 
-	err = transaction.Commit()
+	err = uow.Commit()
 	if err != nil {
 		logger.Error("error while committing transaction", zap.Error(err))
 		return models.OperatorResponse{}, err

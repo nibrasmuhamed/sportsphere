@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 
+	"github.com/mohdjishin/sportsphere/config"
+	"github.com/mohdjishin/sportsphere/pkg/constants"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Transaction interface {
+type UnitOfWork interface {
 	QueueCreate(container DataContainer, object any)
 	QueueCreateMany(container DataContainer, object []any)
 	QueueUpdate(container DataContainer, keyName string, keyValue any, object any, operatorId string)
@@ -16,16 +18,25 @@ type Transaction interface {
 	Abort() error
 }
 
-// MongoTransaction wraps a MongoDB session for transactional operations
-type MongoTransaction struct {
+// MongoUOW wraps a MongoDB session for transactional operations
+type MongoUOW struct {
 	session    mongo.Session
 	ctx        context.Context
 	db         DatabaseClient
 	operations []func() error // Queue to store operations
 }
 
+func NewUnitOfWork(ctx context.Context) (UnitOfWork, error) {
+	switch config.Get().DatabaseType {
+	case string(constants.MONGODB):
+		return NewMongoUOW(ctx)
+	default:
+		return nil, errors.New("invalid database type")
+	}
+}
+
 // StartTransaction initiates a new transaction
-func NewTransaction(ctx context.Context) (Transaction, error) {
+func NewMongoUOW(ctx context.Context) (UnitOfWork, error) {
 	sessionType, err := GetDatabase().StartSession()
 	if err != nil {
 		return nil, err
@@ -37,7 +48,7 @@ func NewTransaction(ctx context.Context) (Transaction, error) {
 	}
 
 	sessionCtx := mongo.NewSessionContext(ctx, session)
-	return &MongoTransaction{
+	return &MongoUOW{
 		session:    session,
 		ctx:        sessionCtx,
 		db:         GetDatabase(),
@@ -46,15 +57,18 @@ func NewTransaction(ctx context.Context) (Transaction, error) {
 }
 
 // QueueCreate adds a create operation to the transaction queue
-func (tx *MongoTransaction) QueueCreate(container DataContainer, object any) {
+func (tx *MongoUOW) QueueCreate(container DataContainer, object any) {
 	tx.operations = append(tx.operations, func() error {
 		err := tx.db.Create(container, object, nil)
+		// if err != nil {
+		// 	logger.Error("error while creating object", zap.Any("error", err), zap.Any("from", c.Value("stage")))
+		// }
 		return err
 	})
 }
 
 // QueueUpdate adds an update operation to the transaction queue
-func (tx *MongoTransaction) QueueUpdate(container DataContainer, keyName string, keyValue any, object any, operatorId string) {
+func (tx *MongoUOW) QueueUpdate(container DataContainer, keyName string, keyValue any, object any, operatorId string) {
 	tx.operations = append(tx.operations, func() error {
 		err := tx.db.Update(container, keyName, keyValue, object, operatorId, tx.ctx, nil)
 		return err
@@ -62,13 +76,13 @@ func (tx *MongoTransaction) QueueUpdate(container DataContainer, keyName string,
 }
 
 // QueueDelete adds a delete operation to the transaction queue
-func (tx *MongoTransaction) QueueDelete(container DataContainer, keyName string, keyValue any, operatorId string) {
+func (tx *MongoUOW) QueueDelete(container DataContainer, keyName string, keyValue any, operatorId string) {
 	tx.operations = append(tx.operations, func() error {
 		err := tx.db.Delete(container, keyName, keyValue, operatorId, nil)
 		return err
 	})
 }
-func (tx *MongoTransaction) QueueCreateMany(container DataContainer, objects []any) {
+func (tx *MongoUOW) QueueCreateMany(container DataContainer, objects []any) {
 	tx.operations = append(tx.operations, func() error {
 		err := tx.db.CreateMany(container, objects, nil)
 		return err
@@ -76,7 +90,7 @@ func (tx *MongoTransaction) QueueCreateMany(container DataContainer, objects []a
 }
 
 // Commit executes all queued operations in sequence, rolling back on any error
-func (tx *MongoTransaction) Commit() error {
+func (tx *MongoUOW) Commit() error {
 	// Start the transaction
 	err := tx.session.StartTransaction()
 	if err != nil {
@@ -97,6 +111,6 @@ func (tx *MongoTransaction) Commit() error {
 }
 
 // Abort rolls back the transaction
-func (tx *MongoTransaction) Abort() error {
+func (tx *MongoUOW) Abort() error {
 	return tx.session.AbortTransaction(tx.ctx)
 }

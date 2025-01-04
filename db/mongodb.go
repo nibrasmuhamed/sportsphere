@@ -198,7 +198,7 @@ func (db *MongoDB) Update(
 	keyValue any,
 	object any,
 	operatorId string,
-	ctx context.Context, t Transaction) error {
+	ctx context.Context, t UnitOfWork) error {
 	if t != nil {
 		t.QueueUpdate(container, keyName, keyValue, object, operatorId)
 		return nil
@@ -221,7 +221,7 @@ func (db *MongoDB) Update(
 
 func (db *MongoDB) Create(
 	container DataContainer,
-	object any, t Transaction) error {
+	object any, t UnitOfWork) error {
 	if t != nil {
 		t.QueueCreate(container, object)
 		return nil
@@ -231,7 +231,7 @@ func (db *MongoDB) Create(
 	return err
 }
 
-func (db *MongoDB) CreateMany(container DataContainer, object []any, t Transaction) error {
+func (db *MongoDB) CreateMany(container DataContainer, object []any, t UnitOfWork) error {
 	if t != nil {
 		t.QueueCreateMany(container, object)
 		return nil
@@ -245,7 +245,7 @@ func (db *MongoDB) Delete(
 	container DataContainer,
 	keyName string,
 	keyValue any,
-	operatorId string, t Transaction) error {
+	operatorId string, t UnitOfWork) error {
 	if t != nil {
 		t.QueueDelete(container, keyName, keyValue, operatorId)
 		return nil
