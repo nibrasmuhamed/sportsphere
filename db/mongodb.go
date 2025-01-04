@@ -42,6 +42,66 @@ func (c Collection) Name() string {
 func NewMongoDB() *MongoDB {
 	return &MongoDB{}
 }
+
+func (db *MongoDB) StartSession() (any, error) {
+	return db.client.StartSession()
+}
+
+// // QueueCreate adds a create operation to the transaction queue
+// func (tx *MongoDB) QueueCreate(container DataContainer, object any) {
+// 	tx.operations = append(tx.operations, func() error {
+// 		collection := tx.database.Collection(container.Name())
+// 		_, err := collection.InsertOne(tx.mongoCtx, object)
+// 		return err
+// 	})
+// }
+
+// // QueueUpdate adds an update operation to the transaction queue
+// func (tx *MongoDB) QueueUpdate(container DataContainer, keyName string, keyValue any, object any, operatorId string) {
+// 	tx.operations = append(tx.operations, func() error {
+// 		collection := tx.database.Collection(container.Name())
+// 		filter := bson.M{keyName: keyValue}
+// 		if operatorId != "" {
+// 			filter["operatorid"] = operatorId
+// 		}
+// 		_, err := collection.UpdateOne(tx.mongoCtx, filter, bson.M{"$set": object})
+// 		return err
+// 	})
+// }
+
+// // QueueDelete adds a delete operation to the transaction queue
+// func (tx *MongoDB) QueueDelete(container DataContainer, keyName string, keyValue any, operatorId string) {
+// 	tx.operations = append(tx.operations, func() error {
+// 		collection := tx.database.Collection(container.Name())
+// 		filter := bson.M{keyName: keyValue}
+// 		if operatorId != "" {
+// 			filter["operatorid"] = operatorId
+// 		}
+// 		_, err := collection.DeleteOne(tx.mongoCtx, filter)
+// 		return err
+// 	})
+// }
+
+func (tx *MongoDB) Commit(f []func() error) error {
+	// Start the transaction
+	session, err := tx.client.StartSession()
+	if err != nil {
+		return err
+	}
+
+	// Execute all queued operations
+	for _, operation := range f {
+		if err := operation(); err != nil {
+			// If any operation fails, abort the transaction and return the error
+			session.AbortTransaction(tx.mongoCtx)
+			return err
+		}
+	}
+
+	// Commit if all operations succeed
+	return session.CommitTransaction(tx.mongoCtx)
+}
+
 func (db *MongoDB) Connect(uri, dbName string) error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -86,13 +146,14 @@ func (db *MongoDB) Get(
 	keyValue any,
 	object any,
 	operatorId string) error {
+
 	dbCollection := db.database.Collection(container.Name())
 	filter := bson.M{}
 	filter[strings.ToLower(keyName)] = keyValue
 	if operatorId != "" {
 		filter["operatorid"] = operatorId
 	}
-	result := dbCollection.FindOne(db.mongoCtx, filter)
+	result := dbCollection.FindOne(context.Background(), filter)
 	if result != nil {
 		err := result.Decode(object)
 		return err
@@ -137,8 +198,11 @@ func (db *MongoDB) Update(
 	keyValue any,
 	object any,
 	operatorId string,
-	ctx context.Context) error {
-
+	ctx context.Context, t Transaction) error {
+	if t != nil {
+		t.QueueUpdate(container, keyName, keyValue, object, operatorId)
+		return nil
+	}
 	dbCollection := db.database.Collection(container.Name())
 	pk := bson.M{strings.ToLower(keyName): keyValue}
 	conditionArr := []bson.M{}
@@ -157,13 +221,21 @@ func (db *MongoDB) Update(
 
 func (db *MongoDB) Create(
 	container DataContainer,
-	object any) error {
+	object any, t Transaction) error {
+	if t != nil {
+		t.QueueCreate(container, object)
+		return nil
+	}
 	dbCollection := db.database.Collection(container.Name())
-	_, err := dbCollection.InsertOne(db.mongoCtx, object)
+	_, err := dbCollection.InsertOne(context.Background(), object)
 	return err
 }
 
-func (db *MongoDB) CreateMany(container DataContainer, keyValue any, object []any) error {
+func (db *MongoDB) CreateMany(container DataContainer, object []any, t Transaction) error {
+	if t != nil {
+		t.QueueCreateMany(container, object)
+		return nil
+	}
 	dbCollection := db.database.Collection(container.Name())
 	_, err := dbCollection.InsertMany(db.mongoCtx, object)
 	return err
@@ -173,7 +245,11 @@ func (db *MongoDB) Delete(
 	container DataContainer,
 	keyName string,
 	keyValue any,
-	operatorId string) error {
+	operatorId string, t Transaction) error {
+	if t != nil {
+		t.QueueDelete(container, keyName, keyValue, operatorId)
+		return nil
+	}
 	dbCollection := db.database.Collection(container.Name())
 	filter := bson.M{}
 	filter[strings.ToLower(keyName)] = keyValue
