@@ -1,29 +1,38 @@
 services:
     db:
-        image: mongo:latest
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: U3BvcnRTcGhlcmUK
+        image: mongo:7.0
+        command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
         ports:
             - "27017:27017"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        healthcheck:
+            test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017'}]}) }" | mongosh --port 27017 --quiet
+            interval: 5s
+            timeout: 30s
+            start_period: 0s
+            start_interval: 1s
+            retries: 30
         volumes:
             - mongo-data:/data/db
+            - "mongo1_config:/data/configdb"
         networks:
             - sportssphere-network
 
     app:
         build: .
         environment:
-            MONGO_URL: "mongodb://root:U3BvcnRTcGhlcmUK@db:27017" # for credentials purpose , can be moved to .env file later. @nibrasmuhamed
+            MONGO_URL: "mongodb://db:27017/?replicaSet=rs0"
         depends_on:
-        - db
+            - db
         networks:
-        - sportssphere-network
+            - sportssphere-network
         ports:
             - "8000:8000"
 
 volumes:
     mongo-data:
+    mongo1_config:
 
 networks:
     sportssphere-network:
