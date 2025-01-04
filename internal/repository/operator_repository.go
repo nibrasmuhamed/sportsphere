@@ -9,6 +9,7 @@ import (
 )
 
 type OperatorRepository interface {
+	// Transaction can be nil if not required.
 	CreateOperator(context.Context, models.Operator, db.Transaction) error
 	GetOperatorByName(string) (models.Operator, error)
 }
