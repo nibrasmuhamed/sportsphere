@@ -15,7 +15,7 @@ var _ DatabaseClient = (*MongoDB)(nil)   // Compile-time check to ensure DB impl
 var _ DataContainer = (*Collection)(nil) // Compile-time check to ensure Collection implements DataContainer
 
 type MongoDB struct {
-	mongoCtx                 context.Context
+	mongoCtx                 context.Context // TODO: Remove this field
 	client                   *mongo.Client
 	database                 *mongo.Database
 	ConnectionCreated        int
@@ -27,7 +27,6 @@ type MongoDB struct {
 	ConnectionCheckedIn      int
 	ConnectionPoolCleared    int
 	ConnectionPoolClosed     int
-	checkedOut               []uint64
 }
 
 type Collection struct {
@@ -47,63 +46,9 @@ func (db *MongoDB) StartSession() (any, error) {
 	return db.client.StartSession()
 }
 
-// // QueueCreate adds a create operation to the transaction queue
-// func (tx *MongoDB) QueueCreate(container DataContainer, object any) {
-// 	tx.operations = append(tx.operations, func() error {
-// 		collection := tx.database.Collection(container.Name())
-// 		_, err := collection.InsertOne(tx.mongoCtx, object)
-// 		return err
-// 	})
-// }
-
-// // QueueUpdate adds an update operation to the transaction queue
-// func (tx *MongoDB) QueueUpdate(container DataContainer, keyName string, keyValue any, object any, operatorId string) {
-// 	tx.operations = append(tx.operations, func() error {
-// 		collection := tx.database.Collection(container.Name())
-// 		filter := bson.M{keyName: keyValue}
-// 		if operatorId != "" {
-// 			filter["operatorid"] = operatorId
-// 		}
-// 		_, err := collection.UpdateOne(tx.mongoCtx, filter, bson.M{"$set": object})
-// 		return err
-// 	})
-// }
-
-// // QueueDelete adds a delete operation to the transaction queue
-// func (tx *MongoDB) QueueDelete(container DataContainer, keyName string, keyValue any, operatorId string) {
-// 	tx.operations = append(tx.operations, func() error {
-// 		collection := tx.database.Collection(container.Name())
-// 		filter := bson.M{keyName: keyValue}
-// 		if operatorId != "" {
-// 			filter["operatorid"] = operatorId
-// 		}
-// 		_, err := collection.DeleteOne(tx.mongoCtx, filter)
-// 		return err
-// 	})
-// }
-
-func (tx *MongoDB) Commit(f []func() error) error {
-	// Start the transaction
-	session, err := tx.client.StartSession()
-	if err != nil {
-		return err
-	}
-
-	// Execute all queued operations
-	for _, operation := range f {
-		if err := operation(); err != nil {
-			// If any operation fails, abort the transaction and return the error
-			session.AbortTransaction(tx.mongoCtx)
-			return err
-		}
-	}
-
-	// Commit if all operations succeed
-	return session.CommitTransaction(tx.mongoCtx)
-}
-
 func (db *MongoDB) Connect(uri, dbName string) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(ctx, clientOptions)
@@ -112,7 +57,7 @@ func (db *MongoDB) Connect(uri, dbName string) error {
 	}
 
 	db.client = client
-	db.mongoCtx = ctx
+	db.mongoCtx = context.Background()
 	db.database = client.Database(dbName)
 	db.ConnectionReady = 1
 	fmt.Println("Connected to MongoDB!")
@@ -227,7 +172,7 @@ func (db *MongoDB) Create(
 		return nil
 	}
 	dbCollection := db.database.Collection(container.Name())
-	_, err := dbCollection.InsertOne(context.Background(), object)
+	_, err := dbCollection.InsertOne(db.mongoCtx, object)
 	return err
 }
 
