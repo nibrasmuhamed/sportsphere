@@ -15,7 +15,7 @@ var _ DatabaseClient = (*MongoDB)(nil)   // Compile-time check to ensure DB impl
 var _ DataContainer = (*Collection)(nil) // Compile-time check to ensure Collection implements DataContainer
 
 type MongoDB struct {
-	mongoCtx                 context.Context
+	mongoCtx                 context.Context // TODO: Remove this field
 	client                   *mongo.Client
 	database                 *mongo.Database
 	ConnectionCreated        int
@@ -27,7 +27,6 @@ type MongoDB struct {
 	ConnectionCheckedIn      int
 	ConnectionPoolCleared    int
 	ConnectionPoolClosed     int
-	checkedOut               []uint64
 }
 
 type Collection struct {
@@ -48,7 +47,8 @@ func (db *MongoDB) StartSession() (any, error) {
 }
 
 func (db *MongoDB) Connect(uri, dbName string) error {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(ctx, clientOptions)
