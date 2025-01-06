@@ -22,7 +22,7 @@ var (
 	config *ServerConfig
 )
 
-func init() {
+func Init() {
 	pathToEnv := helper.GetEnv(constants.CONFIG_PATH, "config/config.json")
 	fileData, err := os.ReadFile(pathToEnv)
 	if err != nil {
