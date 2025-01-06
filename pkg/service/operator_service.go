@@ -18,19 +18,20 @@ type OperatorService interface {
 }
 
 type operatorService struct {
+	unitOfWork   db.UnitOfWork
 	operatorRepo repository.OperatorRepository
 }
 
-func NewOperatorService(operatorRepo repository.OperatorRepository) OperatorService {
-	return &operatorService{operatorRepo: operatorRepo}
+func NewOperatorService(operatorRepo repository.OperatorRepository, uow db.UnitOfWork) OperatorService {
+	return &operatorService{operatorRepo: operatorRepo, unitOfWork: uow}
 }
 
 func (o *operatorService) CreateOperator(operatorRequest models.OperatorRequest) (models.OperatorResponse, error) {
-	uow, err := db.NewUnitOfWork(context.Background())
-	if err != nil {
-		logger.Error("error while creating transaction", zap.Error(err))
-		return models.OperatorResponse{}, err
-	}
+	// uow, err := db.NewUnitOfWork(context.Background())
+	// if err != nil {
+	// 	logger.Error("error while creating transaction", zap.Error(err))
+	// 	return models.OperatorResponse{}, err
+	// }
 
 	operatorModel := models.Operator{
 		OperatorID: uuid.New().String(),
@@ -48,13 +49,13 @@ func (o *operatorService) CreateOperator(operatorRequest models.OperatorRequest)
 		return models.OperatorResponse{}, err
 	}
 
-	err = o.operatorRepo.CreateOperator(context.Background(), operatorModel, uow)
+	err = o.operatorRepo.CreateOperator(context.Background(), operatorModel, o.unitOfWork)
 	if err != nil {
 		logger.Error("error while creating operator", zap.Error(err))
 		return models.OperatorResponse{}, err
 	}
 
-	err = uow.Commit()
+	err = o.unitOfWork.Commit()
 	if err != nil {
 		logger.Error("error while committing transaction", zap.Error(err))
 		return models.OperatorResponse{}, err

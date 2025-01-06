@@ -8,6 +8,8 @@ import (
 	models "github.com/mohdjishin/sportsphere/pkg/model"
 )
 
+//go: go generate mockgen -source=internal/repository/operator_repository.go -destination=../../mocks/mock_operator_repository.go -package=mocks
+
 type OperatorRepository interface {
 	// uow can be nil if not required.
 	CreateOperator(context.Context, models.Operator, db.UnitOfWork) error
