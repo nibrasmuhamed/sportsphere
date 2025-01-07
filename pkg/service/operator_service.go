@@ -27,37 +27,31 @@ func NewOperatorService(operatorRepo repository.OperatorRepository, uow db.UnitO
 }
 
 func (o *operatorService) CreateOperator(operatorRequest models.OperatorRequest) (models.OperatorResponse, error) {
-	// uow, err := db.NewUnitOfWork(context.Background())
-	// if err != nil {
-	// 	logger.Error("error while creating transaction", zap.Error(err))
-	// 	return models.OperatorResponse{}, err
-	// }
-
 	operatorModel := models.Operator{
 		OperatorID: uuid.New().String(),
 		Name:       operatorRequest.Name,
 	}
 
 	dbOperator, err := o.operatorRepo.GetOperatorByName(operatorRequest.Name)
-	logger.Info("dbOperator", zap.Any("dbOperator", dbOperator))
+	logger.GetLogger().Info("dbOperator", zap.Any("dbOperator", dbOperator))
 	if err == nil && operatorModel.Name == dbOperator.Name {
-		logger.Error("operator with name already exists", zap.String("name", operatorRequest.Name))
+		logger.GetLogger().Error("operator with name already exists", zap.String("name", operatorRequest.Name))
 		return models.OperatorResponse{}, fmt.Errorf("operator with name %s already exists", operatorRequest.Name)
 	}
 	if err != nil && err != mongo.ErrNoDocuments {
-		logger.Error("error while fetching operator", zap.Error(err))
+		logger.GetLogger().Error("error while fetching operator", zap.Error(err))
 		return models.OperatorResponse{}, err
 	}
 
 	err = o.operatorRepo.CreateOperator(context.Background(), operatorModel, o.unitOfWork)
 	if err != nil {
-		logger.Error("error while creating operator", zap.Error(err))
+		logger.GetLogger().Error("error while creating operator", zap.Error(err))
 		return models.OperatorResponse{}, err
 	}
 
 	err = o.unitOfWork.Commit()
 	if err != nil {
-		logger.Error("error while committing transaction", zap.Error(err))
+		logger.GetLogger().Error("error while committing transaction", zap.Error(err))
 		return models.OperatorResponse{}, err
 	}
 	return models.OperatorResponse{
