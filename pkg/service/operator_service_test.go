@@ -23,14 +23,9 @@ func TestOperatorService(t *testing.T) {
 }
 
 func (suite *OperatorServiceTestSuite) SetupTest() {
-	// Initialize gomock.Controller and assign to mockCtrl
 	suite.mockCtrl = gomock.NewController(suite.T())
-
-	// Create mocks using the same controller
 	suite.repository = mocks.NewMockOperatorRepository(suite.mockCtrl)
 	suite.uow = mocks.NewMockUnitOfWork(suite.mockCtrl)
-
-	// Initialize the service with the mocked repository
 	suite.OperatorService = NewOperatorService(suite.repository, suite.uow)
 }
 
@@ -44,27 +39,24 @@ func (suite *OperatorServiceTestSuite) TestCreateOperatorSuccess() {
 
 	// Mock GetOperatorByName to simulate operator not existing
 	suite.repository.EXPECT().
-		GetOperatorByName(operatorRequest.Name).
+		GetOperatorByName(gomock.Eq(operatorRequest.Name)).
 		Return(models.Operator{}, mongo.ErrNoDocuments).Times(1)
 
 	// Mock CreateOperator
 	suite.repository.EXPECT().
-		CreateOperator(gomock.Any(), gomock.Any(), suite.uow).
-		DoAndReturn(func(ctx interface{}, operator models.Operator, uow interface{}) error {
-			suite.T().Logf("CreateOperator called with operator=%v, uow=%v", operator, uow)
-			return nil
-		})
+		CreateOperator(gomock.Any(), gomock.AssignableToTypeOf(models.Operator{}), suite.uow).
+		Return(nil).Times(1)
 
 	// Mock Commit
 	suite.uow.EXPECT().
 		Commit().
-		Return(nil)
+		Return(nil).Times(1)
 
 	// Act
 	response, err := suite.OperatorService.CreateOperator(operatorRequest)
 
 	// Assert
-	suite.Nil(err)
+	suite.Require().NoError(err)
 	suite.Equal(operatorRequest.Name, response.Name)
 	suite.NotEmpty(response.OperatorId)
 }

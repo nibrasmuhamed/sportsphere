@@ -70,6 +70,13 @@ func getLogLevelFromEnv(logLevel string) zapcore.Level {
 	}
 }
 
+func GetLogger() *LoggerClass {
+	if logger == nil {
+		return &LoggerClass{zapLogger: zap.NewNop()}
+	}
+	return logger
+}
+
 func (l *LoggerClass) Info(msg string, fields ...zap.Field) {
 	l.zapLogger.Info(msg, fields...)
 }
