@@ -1,0 +1,58 @@
+definitions:
+  helper.BaseResponse:
+    properties:
+      error_code:
+        type: string
+      error_message:
+        type: string
+      error_type:
+        type: string
+    type: object
+  models.OperatorRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  models.OperatorResponse:
+    properties:
+      created_at:
+        type: string
+      name:
+        type: string
+      operator_id:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/operator:
+    post:
+      consumes:
+      - application/json
+      description: Add a new operator with details
+      parameters:
+      - description: Operator Details
+        in: body
+        name: operator
+        required: true
+        schema:
+          $ref: '#/definitions/models.OperatorRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.OperatorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+      summary: Create a new operator
+      tags:
+      - Operator
+swagger: "2.0"
