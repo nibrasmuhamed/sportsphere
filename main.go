@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/mohdjishin/sportsphere/config"
 	_ "github.com/mohdjishin/sportsphere/config"
 	"github.com/mohdjishin/sportsphere/db"
 	"github.com/mohdjishin/sportsphere/internal/server"
@@ -15,6 +16,8 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	config.Init()
 
 	logger.Run(ctx)
 	db.InitDatabase()
