@@ -44,14 +44,3 @@ func registerAPIRoutes(r chi.Router) {
 	r.Get("/health", healthCheck.HealthCheck)
 
 }
-
-func registerInfoRoutes(r chi.Router) {
-	r.Get("/info", handlers.Info)
-}
-
-func registerUserRoutes(r chi.Router) {
-	r.Route("/users", func(r chi.Router) {
-		r.Get("/", handlers.ListUsers)
-		r.Post("/", handlers.CreateUser)
-	})
-}
