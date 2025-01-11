@@ -6,11 +6,11 @@ import (
 	"context"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/mohdjishin/sportsphere/db"
-	_ "github.com/mohdjishin/sportsphere/docs" // Import for Swagger documentation
-	"github.com/mohdjishin/sportsphere/internal/handlers"
-	"github.com/mohdjishin/sportsphere/internal/repository"
-	"github.com/mohdjishin/sportsphere/pkg/service"
+	"github.com/nibrasmuhamed/sportsphere/db"
+	_ "github.com/nibrasmuhamed/sportsphere/docs" // Import for Swagger documentation
+	"github.com/nibrasmuhamed/sportsphere/internal/handlers"
+	"github.com/nibrasmuhamed/sportsphere/internal/repository"
+	"github.com/nibrasmuhamed/sportsphere/pkg/service"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 

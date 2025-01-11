@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/mohdjishin/sportsphere/config"
+	"github.com/nibrasmuhamed/sportsphere/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

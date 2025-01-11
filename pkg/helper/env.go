@@ -3,7 +3,7 @@ package helper
 import (
 	"os"
 
-	"github.com/mohdjishin/sportsphere/pkg/constants"
+	"github.com/nibrasmuhamed/sportsphere/pkg/constants"
 )
 
 func GetEnv(key constants.EnvironmentVariable, fallback string) string {

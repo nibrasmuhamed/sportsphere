@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/mohdjishin/sportsphere/pkg/helper"
-	models "github.com/mohdjishin/sportsphere/pkg/model"
-	"github.com/mohdjishin/sportsphere/pkg/service"
+	"github.com/nibrasmuhamed/sportsphere/pkg/helper"
+	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
+	"github.com/nibrasmuhamed/sportsphere/pkg/service"
 )
 
 type OperatorHandler interface {

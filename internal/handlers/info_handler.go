@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mohdjishin/sportsphere/internal/meta"
+	"github.com/nibrasmuhamed/sportsphere/internal/meta"
 )
 
 type infoResponse struct {

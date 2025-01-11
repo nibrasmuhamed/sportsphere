@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	db "github.com/mohdjishin/sportsphere/db"
-	models "github.com/mohdjishin/sportsphere/pkg/model"
+	db "github.com/nibrasmuhamed/sportsphere/db"
+	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
 )
 
 // MockOperatorRepository is a mock of OperatorRepository interface.

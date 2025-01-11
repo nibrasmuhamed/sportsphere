@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/mohdjishin/sportsphere/pkg/helper"
+	"github.com/nibrasmuhamed/sportsphere/pkg/helper"
 )
 
 type HealthCheckController interface {

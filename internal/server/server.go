@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/mohdjishin/sportsphere/config"
-	"github.com/mohdjishin/sportsphere/internal/middleware"
-	"github.com/mohdjishin/sportsphere/internal/routes"
-	"github.com/mohdjishin/sportsphere/pkg/logger"
+	"github.com/nibrasmuhamed/sportsphere/config"
+	"github.com/nibrasmuhamed/sportsphere/internal/middleware"
+	"github.com/nibrasmuhamed/sportsphere/internal/routes"
+	"github.com/nibrasmuhamed/sportsphere/pkg/logger"
 	"go.uber.org/zap"
 )
 

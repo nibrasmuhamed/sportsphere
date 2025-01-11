@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/mohdjishin/sportsphere/pkg/constants"
-	"github.com/mohdjishin/sportsphere/pkg/helper"
+	"github.com/nibrasmuhamed/sportsphere/pkg/constants"
+	"github.com/nibrasmuhamed/sportsphere/pkg/helper"
 )
 
 type ServerConfig struct {

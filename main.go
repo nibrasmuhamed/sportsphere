@@ -6,11 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mohdjishin/sportsphere/config"
-	_ "github.com/mohdjishin/sportsphere/config"
-	"github.com/mohdjishin/sportsphere/db"
-	"github.com/mohdjishin/sportsphere/internal/server"
-	"github.com/mohdjishin/sportsphere/pkg/logger"
+	"github.com/nibrasmuhamed/sportsphere/config"
+	_ "github.com/nibrasmuhamed/sportsphere/config"
+	"github.com/nibrasmuhamed/sportsphere/db"
+	"github.com/nibrasmuhamed/sportsphere/internal/server"
+	"github.com/nibrasmuhamed/sportsphere/pkg/logger"
 )
 
 func main() {

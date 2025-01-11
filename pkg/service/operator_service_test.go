@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mohdjishin/sportsphere/mocks"
-	models "github.com/mohdjishin/sportsphere/pkg/model"
+	"github.com/nibrasmuhamed/sportsphere/mocks"
+	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 )

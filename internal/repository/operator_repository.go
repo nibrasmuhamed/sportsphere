@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/mohdjishin/sportsphere/db"
-	models "github.com/mohdjishin/sportsphere/pkg/model"
+	"github.com/nibrasmuhamed/sportsphere/db"
+	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
 )
 
 //go: go generate mockgen -source=internal/repository/operator_repository.go -destination=../../mocks/mock_operator_repository.go -package=mocks

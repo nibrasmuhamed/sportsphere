@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/mohdjishin/sportsphere/db"
-	"github.com/mohdjishin/sportsphere/internal/repository"
-	"github.com/mohdjishin/sportsphere/pkg/logger"
-	models "github.com/mohdjishin/sportsphere/pkg/model"
+	"github.com/nibrasmuhamed/sportsphere/db"
+	"github.com/nibrasmuhamed/sportsphere/internal/repository"
+	"github.com/nibrasmuhamed/sportsphere/pkg/logger"
+	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )

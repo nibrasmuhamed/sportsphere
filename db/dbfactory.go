@@ -1,9 +1,9 @@
 package db
 
 import (
-	"github.com/mohdjishin/sportsphere/config"
-	"github.com/mohdjishin/sportsphere/pkg/constants"
-	"github.com/mohdjishin/sportsphere/pkg/helper"
+	"github.com/nibrasmuhamed/sportsphere/config"
+	"github.com/nibrasmuhamed/sportsphere/pkg/constants"
+	"github.com/nibrasmuhamed/sportsphere/pkg/helper"
 )
 
 func InitDatabase() {

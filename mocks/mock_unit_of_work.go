@@ -8,7 +8,7 @@ import (
         reflect "reflect"
 
         gomock "github.com/golang/mock/gomock"
-        db "github.com/mohdjishin/sportsphere/db"
+        db "github.com/nibrasmuhamed/sportsphere/db"
 )
 
 // MockUnitOfWork is a mock of UnitOfWork interface.
