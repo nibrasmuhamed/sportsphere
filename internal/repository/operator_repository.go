@@ -17,25 +17,32 @@ type OperatorRepository interface {
 }
 
 type operatorRepository struct {
-	db db.DatabaseClient
+	db        db.DatabaseClient
+	container db.DataContainer
 }
 
-var OperatorCollection = db.Collection{
-	CollectionName: "operator",
-	PrimaryKeyName: "operator_id",
-}
+// var OperatorCollection = db.Collection{
+// 	CollectionName: "operator",
+// 	PrimaryKeyName: "operator_id",
+// }
 
 func NewOperatorRepository() OperatorRepository {
-	return &operatorRepository{db: db.GetDatabase()}
+	return &operatorRepository{
+		db: db.GetDatabase(),
+		container: db.Collection{
+			CollectionName: "operator",
+			PrimaryKeyName: "operator_id",
+		},
+	}
 }
 
 func (o *operatorRepository) CreateOperator(ctx context.Context, operator models.Operator, t db.UnitOfWork) error {
 	operator.CreatedAt = time.Now()
-	return o.db.Create(OperatorCollection, operator, t)
+	return o.db.Create(o.container, operator, t)
 }
 
 func (o *operatorRepository) GetOperatorByName(operatorName string) (models.Operator, error) {
 	var operator models.Operator
-	err := o.db.Get(OperatorCollection, "name", operatorName, &operator, "")
+	err := o.db.Get(o.container, "name", operatorName, &operator, "")
 	return operator, err
 }
