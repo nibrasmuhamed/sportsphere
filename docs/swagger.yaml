@@ -22,6 +22,22 @@ definitions:
       operator_id:
         type: string
     type: object
+  models.RegisterUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      userName:
+        type: string
+    type: object
+  models.RegisterUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -55,4 +71,30 @@ paths:
       summary: Create a new operator
       tags:
       - Operator
+  /api/v1/user:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Operator Details
+        in: body
+        name: operator
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.RegisterUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.BaseResponse'
+      summary: Create a new operator
+      tags:
+      - Users
 swagger: "2.0"
