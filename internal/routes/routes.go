@@ -16,7 +16,7 @@ import (
 
 // @title Sportsphere API
 // @version 1.0
-// @description This is a sample API for the Sportsphere platform.
+// @description API for the Sportsphere platform.
 // @termsOfService http://example.com/terms/
 // @contact.name API Support
 // @contact.url http://www.example.com/support
@@ -27,20 +27,44 @@ import (
 // @BasePath /api/v1
 
 func RegisterRoutes(r *chi.Mux) {
-	registerAPIRoutes(r)
+	uow, err := db.NewUnitOfWork(context.Background())
+	if err != nil {
+		panic("failed to initialize unit of work")
+	}
+
+	registerSwaggerRoutes(r)
+	registerHealthRoutes(r)
+	registerAPIV1Routes(r, uow)
 }
 
-func registerAPIRoutes(r chi.Router) {
-	// an abstraction to handle health check
-	healthCheck := handlers.NewHealthCheck()
-	uow, _ := db.NewUnitOfWork(context.Background())
-	operatorRepository := repository.NewOperatorRepository()
-	operatorService := service.NewOperatorService(operatorRepository, uow)
-	operatorController := handlers.NewOperatorHandler(operatorService)
+func registerSwaggerRoutes(r chi.Router) {
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
-	//operator routes
-	r.Post("/api/v1/operator", operatorController.CreateOperator)
+}
 
-	r.Get("/health", healthCheck.HealthCheck)
+func registerHealthRoutes(r chi.Router) {
+	r.Get("/health", handlers.NewHealthCheck().HealthCheck)
+}
 
+func registerAPIV1Routes(r chi.Router, uow db.UnitOfWork) {
+	v1 := chi.NewRouter()
+	r.Mount("/api/v1", v1)
+
+	registerOperatorRoutes(v1, uow)
+	registerUserRoutes(v1, uow)
+}
+
+func registerOperatorRoutes(r chi.Router, uow db.UnitOfWork) {
+	repo := repository.NewOperatorRepository()
+	service := service.NewOperatorService(repo, uow)
+	controller := handlers.NewOperatorHandler(service)
+
+	r.Post("/operator", controller.CreateOperator)
+}
+
+func registerUserRoutes(r chi.Router, uow db.UnitOfWork) {
+	repo := repository.NewUserRepository()
+	service := service.NewUserService(repo, uow)
+	controller := handlers.NewUserController(service)
+
+	r.Post("/user", controller.RegisterUser)
 }
