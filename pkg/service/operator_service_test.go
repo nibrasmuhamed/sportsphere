@@ -3,11 +3,11 @@ package service
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/nibrasmuhamed/sportsphere/mocks"
 	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/mock/gomock"
 )
 
 type OperatorServiceTestSuite struct {
