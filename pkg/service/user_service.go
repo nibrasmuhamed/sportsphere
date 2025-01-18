@@ -28,13 +28,9 @@ func NewUserService(userRepoRepo repository.UserRepository, uow db.UnitOfWork) U
 }
 
 func (u *userService) RegisterUser(ctx context.Context, r models.RegisterUserRequest) (*models.RegisterUserResponse, error) {
-
-	// do validations here. (jishin)
-
 	if u.userRepo.UserExistsByEmail(r.Email) {
 		logger.GetLogger().Error("user with email already exists", zap.String("email", r.Email))
 		return nil, fmt.Errorf("user with email %s already exists", r.Email)
-
 	}
 
 	if u.userRepo.UserExistsByUsername(r.UserName) {

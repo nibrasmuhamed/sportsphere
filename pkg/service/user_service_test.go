@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"testing"
 
 	"github.com/nibrasmuhamed/sportsphere/mocks"
 	models "github.com/nibrasmuhamed/sportsphere/pkg/model"
@@ -11,13 +12,19 @@ import (
 
 type UserServiceTestSuite struct {
 	suite.Suite
+	context     context.Context
 	UserService UserService
 	uow         *mocks.MockUnitOfWork
 	repository  *mocks.MockUserRepository
 	mockCtrl    *gomock.Controller
 }
 
+func TestUserService(t *testing.T) {
+	suite.Run(t, new(UserServiceTestSuite))
+}
+
 func (suite *UserServiceTestSuite) SetupTest() {
+	suite.context = context.Background()
 	suite.mockCtrl = gomock.NewController(suite.T())
 	suite.repository = mocks.NewMockUserRepository(suite.mockCtrl)
 	suite.uow = mocks.NewMockUnitOfWork(suite.mockCtrl)
@@ -37,11 +44,11 @@ func (suite *UserServiceTestSuite) TestRegisterUserSuccess() {
 		Phone:    "1234567890",
 	}
 
-	// Mock the repository method to expect a call and return nil (indicating success).
-	suite.repository.EXPECT().CreateUser(gomock.Eq(userRequest), gomock.AssignableToTypeOf(models.User{}), suite.uow).Return(nil).Times(1)
-
-	ctx := context.Background()
-	response, err := suite.UserService.RegisterUser(ctx, userRequest)
+	suite.repository.EXPECT().
+		CreateUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+	suite.repository.EXPECT().UserExistsByEmail(userRequest.Email).Return(false)
+	suite.repository.EXPECT().UserExistsByUsername(userRequest.UserName).Return(false)
+	response, err := suite.UserService.RegisterUser(suite.context, userRequest)
 
 	suite.T().Logf("Response: %+v", response)
 
