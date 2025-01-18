@@ -18,6 +18,7 @@ type DatabaseClient interface {
 	CreateMany(container DataContainer, object []any, t UnitOfWork) error
 	// Transaction can be nil if not required.
 	Delete(container DataContainer, keyName string, keyValue any, operatorId string, t UnitOfWork) error
+	Count(container DataContainer, keyName string, keyValue any) (int, error)
 	StartSession() (any, error)
 }
 

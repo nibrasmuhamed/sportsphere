@@ -44,18 +44,11 @@ func (u *userRepository) GetUserByEmail(email string) (*models.User, error) {
 }
 
 func (u *userRepository) UserExistsByEmail(email string) bool {
-
-	err := u.db.Get(u.container, "email", email, &models.User{}, "")
-	if err == nil {
-		return true
-	}
-	return false
+	count, err := u.db.Count(u.container, "email", email)
+	return err == nil && count > 0
 }
 
 func (u *userRepository) UserExistsByUsername(username string) bool {
-	err := u.db.Get(u.container, "user_name", username, &models.User{}, "")
-	if err == nil {
-		return true
-	}
-	return false
+	count, err := u.db.Count(u.container, "user_name", username)
+	return err == nil && count > 0
 }
