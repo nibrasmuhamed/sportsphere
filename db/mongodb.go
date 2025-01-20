@@ -133,6 +133,15 @@ func (db *MongoDB) GetMany(
 	return err
 }
 
+// write for count method
+func (db *MongoDB) Count(container DataContainer, keyName string, keyValue any) (int, error) {
+	dbCollection := db.database.Collection(container.Name())
+	filter := bson.M{}
+	filter[strings.ToLower(keyName)] = keyValue
+	count, err := dbCollection.CountDocuments(db.mongoCtx, filter)
+	return int(count), err
+}
+
 // func (db *MongoDB) GetAll(container DataContainer, object any, operatorId string) error {
 
 // }

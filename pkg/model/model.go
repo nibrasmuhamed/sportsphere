@@ -14,17 +14,6 @@ type Turf struct {
 }
 
 // User represents a system user.
-type User struct {
-	ID            string    `json:"id" bson:"_id"`
-	UserName      string    `json:"userName" bson:"user_name"`
-	Email         string    `json:"email" bson:"email"`
-	Phone         string    `json:"phone" bson:"phone"`
-	Password      string    `json:"password" bson:"password"`
-	OperatorID    string    `json:"operatorId,omitempty" bson:"operator_id,omitempty"`
-	CreatedAt     time.Time `json:"createdAt" bson:"created_at"`
-	UpdatedAt     time.Time `json:"updatedAt" bson:"updated_at"`
-	IsDeactivated bool      `json:"isDeactivated" bson:"is_deactivated"`
-}
 
 // DaySlots represents the slots for a specific day.
 type DaySlots struct {
